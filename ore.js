@@ -5,46 +5,6 @@
 const set_seed = noise.seed;
 const scale = 22;
 
-function clamp(x, lo, hi) {
-    if (x < lo) { x = lo; }
-    if (x > hi) { x = hi; }
-    return x;
-}
-
-function lerp(start, end, t) {
-    return start + t * (end-start);
-}
-
-function lerpPoint(P, Q, t) {
-    return {x: lerp(P.x, Q.x, t),
-            y: lerp(P.y, Q.y, t)};
-}
-
-function interpolationPoints(P, Q, N) {
-    let points = [];
-    for (let i = 0; i <= N; i++) {
-        let t = N == 0? 0 : i / N;
-        points.push(lerpPoint(P, Q, t));
-    }
-    return points;
-}
-
-function roundPoint(P) {
-    return {x: Math.round(P.x), y: Math.round(P.y) };
-}
-
-function lineDistance(A, B) {
-    return Math.max(Math.abs(A.x - B.x), Math.abs(A.y - B.y));
-}
-
-function zip(a, b) {
-    var result = [];
-    for (var i = 0; i < a.length; i++){
-       result.push([a[i], b[i]]);
-    }
-    return result;
-}
-
 function octave(n, weight) {
     return function (xi) {
         let amp = Math.pow(2, n);
@@ -63,8 +23,6 @@ class Diagram {
         this.root = d3.select(`#${containerId}`);
         this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([10*scale, 0]).clamp(true);
         this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, 25*scale]);
-        this.A = {x: 2, y: 2};
-        this.B = {x: 20, y: 8};
         this.parent = this.root.select("svg");
         this._updateFunctions = [];
     }

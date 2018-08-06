@@ -72,16 +72,17 @@
       <svg width="550" height="220"></svg>
       <p>
         In a computer program such as Factorio, or such as this
-        webpage, we can represent the noise function like this:
+        webpage, we can call the noise function like this:
       </p>
-      <blockquote><code>height (x) {
+      <blockquote><code>function height(x) {
   noise(x);
 }</code></blockquote>
       <p>
         This function is called once for every x coordinate on this
-        graph, and returns the height of the graph at that
-        point. Factorio obviously uses 2D noise that is based on both
-        the x and y coordinates, but everything else will be the same.
+        graph, and returns the height that the graph should have at
+        that point. Factorio obviously uses 2D noise that is based on
+        both the x and y coordinates, but everything else will be the
+        same.
       </p>
       <p>
         I'm leaving out many details about how the noise is created,
@@ -137,7 +138,7 @@
         <input type="checkbox" data-name="clipped" id="clipped1"></input>
         <label for="clipped1">Clip to zero.</label>
       </p>
-      <blockquote><code>height (x) {
+      <blockquote><code>function height(x) {
   noise(x * <span data-name="frequency"></span>);
 }</code></blockquote>
       <p>
@@ -165,7 +166,7 @@
         <input type="checkbox" data-name="clipped" id="clipped1"></input>
         <label for="clipped1">Clip to zero.</label>
       </p>
-      <blockquote><code>height (x) {
+      <blockquote><code>function height(x) {
   noise(x) + <span data-name="size"></span>;
 }</code></blockquote>
       <p>
@@ -197,7 +198,7 @@
         <input type="checkbox" data-name="clipped" id="clipped1"></input>
         <label for="clipped1">Clip to zero.</label>
       </p>
-      <blockquote><code>height (x) {
+      <blockquote><code>function height(x) {
   <span data-name="richness"></span> * noise(x);
 }</code></blockquote>
     </div>
@@ -250,7 +251,7 @@
         <label for="clipped1">Clip to zero.</label>
       </p>
       <blockquote><code>set_seed(<span data-name="seed"></span>);</code></blockquote>
-      <blockquote><code>height (x) {
+      <blockquote><code>function height(x) {
   <span data-name="richness"></span> * noise(x * <span data-name="frequency"></span>) + <span data-name="size"></span>;
 }</code></blockquote>
     </div>
