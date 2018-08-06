@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Line drawing</title>
+    <link rel="stylesheet" href="pagestyle.css">
+    <script src="d3.min.js"></script>
+    <script src="tracer.js"></script>
+    <script src="perlin.js"></script>
+    <style>
+        svg { pointer-events: none; }
+        text { font-size: 10px; }
+        p { margin: 1em 1em; text-indent: 1em; }
+        p + h2, div + h2 { margin-top: 2em; }
+        code { white-space: pre; }
+        g.grid rect { fill: hsl(0,10%,85%); stroke: hsl(60,10%,95%); }
+        span[data-name] {
+            display: inline-block;
+            width: 3em;
+            padding: 4px 6px;
+            text-align: center;
+            line-height: 1.5;
+            background-color: hsla(60,50%,97%,0.8);
+            box-shadow: 0 0 4px hsla(0,0%,0%,0.3); 
+            border-radius: 4px;
+            border: none;
+            transition: background-color 0.15s, box-shadow 0.15s; 
+        }
+        span[data-name]:hover { 
+            box-shadow: 0 0 4px hsla(0,50%,50%,1.0); 
+        }
+        span[data-name="size"] {
+            width: 4em;
+        }
+        g.noise path {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        g.zero line {
+            fill: none;
+            stroke: darkred;
+            stroke-width: 1px;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Factorio Resource Generation</h1>
+    <h2>or, "Why does choosing large ore patches result in so many small patches?"</h2>
+    <p>
+      I occasionally see folks lamenting that they got some small ore
+      patches even though they asked the game to generate large
+      ones. The Factorio wiki does try to answer this question, but I
+      think an interactive explanation would help.
+    </p>
+
+    <h2>Make some noise</h2>
+    <div id="noise">
+      <p>
+        The first step is to draw a wiggly line using random
+        numbers. We use something called a "noise function" to do
+        this. A noise function takes some random numbers and uses them
+        to draw a curve that has nice aethetic properties. Of course
+        it would be simpler to draw the random numbers directly, but
+        the result wouldn't be very pleasant.
+      </p>
+      <p>
+        There are many types of noise functions. This webpage uses a
+        classic function called Perlin noise; Factorio probably uses
+        something similar.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        In a computer program such as Factorio, or such as this
+        webpage, we can represent the noise function like this:
+      </p>
+      <blockquote><code>height (x) {
+  noise(x);
+}</code></blockquote>
+      <p>
+        This function is called once for every x coordinate on this
+        graph, and returns the height of the graph at that
+        point. Factorio obviously uses 2D noise that is based on both
+        the x and y coordinates, but everything else will be the same.
+      </p>
+      <p>
+        I'm leaving out many details about how the noise is created,
+        and what parameters a game developer can use to customize the
+        overall look of the noise. These parameters are fairly
+        complicated, and can be used to turn a simple noise function
+        into a wide variety of pleasing shapes and patterns. With some
+        work, they can reproduce wood grain, the flocking patterns of
+        birds, fire and smoke, terrain elevation, stock prices, or
+        virtually any other thing you can think of. Part of the
+        artistry of writing a game like Factorio is using noise
+        functions effectively. For the purposes of this demo, I've
+        kept the noise function fairly simple.
+      </p>
+    </div>
+
+    <h2>Threshold it</h2>
+    <div id="threshold">
+      <p>
+        The next step is to treat the height of the curve as the
+        amount of ore in that spot. Since the amount of ore in a tile
+        cannot be negative, we treat all negative numbers as zero
+        ore. This effectively clips the curve at zero.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Use this checkbox to control the clipping.</label>
+      </p>
+      <p>
+        This is not an option Factorio gives you, but you can use it
+        here to better see what is going on.
+      </p>
+    </div>
+
+    <h2>Stretch it</h2>
+    <div id="frequency">
+      <p>
+        The first option Factorio gives you is control over the
+        frequency of ore patches. Higher frequency means that there is
+        less distance between patches, lower frequency means a longer
+        distance between patches.
+      </p>
+      <p>
+        As you scrub back and forth below, watch how this also affects
+        the width of each patch. At higher frequencies, the patches
+        can become quite narrow, but some wide patches may still
+        exist. At low frequencies each patch will be much wider than
+        normal, but some will still be quite narrow.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Clip to zero.</label>
+      </p>
+      <blockquote><code>height (x) {
+  noise(x * <span data-name="frequency"></span>);
+}</code></blockquote>
+      <p>
+        Here we see how this is implemented. By multiplying the x
+        coordinate by the frequency, we step further along the noise
+        function for each step we take in the x direction. This
+        squezes the noise function into a smaller amount of
+        terrain. When the frequency is less than 1.0, this squeeze
+        becomes a stretch.
+      </p>
+    </div>
+
+    <h2>Add to it</h2>
+    <div id="size">
+      <p>
+        The next option Factorio gives is the size of the
+        patches. This is intended to control the width of the patches
+        without changing the distance between them. However, as you
+        scrub the size value below, notice how new patches can appear
+        between the existing ones. The existing patches have gotten
+        larger, but these new patches will be smaller.
+        </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Clip to zero.</label>
+      </p>
+      <blockquote><code>height (x) {
+  noise(x) + <span data-name="size"></span>;
+}</code></blockquote>
+      <p>
+        As you can see from the implementation, all we're doing is
+        adding a constant value at every point along the graph. This
+        has the effect of raising or lowering the graph as a
+        whole. This is much clearer when the whole graph is visible,
+        as you can see ahead of time where the next peak will rise
+        above the threshold.
+      </p>
+      <p>
+        You'll also notice that the threshold starts out
+        negative. This to make ore rare enough to make a fun game. If
+        the offset were zero, then about half the map would be ore.
+      </p>
+    </div>
+
+    <h2>Scale it</h2>
+    <div id="richness">
+      <p>
+        Finally, Factorio gives us control over the richness of each
+        patch. This is implemented by multiplying each ore amount by a
+        constant factor, exagerating the peaks. However, even this can
+        create new patches between existing ones, as peaks that were
+        beneath the threshold are now pushed above it.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Clip to zero.</label>
+      </p>
+      <blockquote><code>height (x) {
+  <span data-name="richness"></span> * noise(x);
+}</code></blockquote>
+    </div>
+
+    <h2>Seed it</h2>
+    <div id="seed">
+      <p>
+        Of course it wouldn't be much fun if the ore was all in the
+        same places every time you played. Thus Factorio chooses a
+        random seed value when you start a new game, and arranges for
+        each seed value to result in a different output from the noise
+        function. Try some different seed values here to see this in
+        action.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Clip to zero.</label>
+      </p>
+      <blockquote><code>set_seed(<span data-name="seed"></span>);</code></blockquote>
+      <p>
+        Factorio can use any of billions of different seed values, but
+        for this demo I've limited them to just zero through 100. If
+        you turn off clipping, you'll be able to see just how much the
+        noise function changes shape with different seeds.
+      </p>
+      <p>
+        Because the "random" numbers used by the noise function depend
+        on the seed value, you can start a Factorio map with a
+        specific seed value and get the same map every time. This
+        especially helps in multiplayer, as the server can send the
+        seed value to each player and know that they will generate the
+        same terrain as the server. Of course, anything the players
+        build must still be communicated to all players, but the
+        underlying terrain need not be. This can save considerable
+        bandwidth during a game.
+      </p>
+    </div>
+
+    <h2>Putting it all together</h2>
+    <p>
+    </p>
+    <div id="everything">
+      <p>
+        Of course Factorio doesn't make you pick just one of these four options; you can use them all simultaneously.
+      </p>
+      <svg width="550" height="220"></svg>
+      <p>
+        <input type="checkbox" data-name="clipped" id="clipped1"></input>
+        <label for="clipped1">Clip to zero.</label>
+      </p>
+      <blockquote><code>set_seed(<span data-name="seed"></span>);</code></blockquote>
+      <blockquote><code>height (x) {
+  <span data-name="richness"></span> * noise(x * <span data-name="frequency"></span>) + <span data-name="size"></span>;
+}</code></blockquote>
+    </div>
+    <script src="ore.js"></script>
+    <footer xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+      <a rel="license"
+         style="float:left;width:100px;margin-right:1em"
+         href="http://creativecommons.org/publicdomain/zero/1.0/">
+        <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+      </a>
+      This page is in the <a href="https://creativecommons.org/publicdomain/zero/1.0/">public domain</a>.
+      Use it as you wish. Attribution is not necessary, but appreciated.
+    </footer>
+  </body>
+</html>
