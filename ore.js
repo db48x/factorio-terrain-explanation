@@ -21,9 +21,11 @@ function octaves(weights) {
 class Diagram {
     constructor(containerId) {
         this.root = d3.select(`#${containerId}`);
-        this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([10*scale, 0]).clamp(true);
-        this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, 25*scale]);
         this.parent = this.root.select("svg");
+        this.width = this.parent.property("width").baseVal.value;
+        this.height = this.parent.property("height").baseVal.value;
+        this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([this.height, 0]).clamp(true);
+        this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, this.width]);
         this._updateFunctions = [];
     }
 
@@ -38,8 +40,8 @@ class Diagram {
 
     addGrid() {
         let g = this.parent.append('g').attr('class', "grid");
-        for (let x = 0; x < 25; x++) {
-            for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < this.width/scale; x++) {
+            for (let y = 0; y < this.height/scale; y++) {
                 g.append('rect')
                     .attr('transform', `translate(${x*scale}, ${y*scale})`)
                     .attr('width', scale)

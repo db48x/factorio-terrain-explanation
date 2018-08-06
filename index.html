@@ -7,42 +7,6 @@
     <script src="d3.min.js"></script>
     <script src="tracer.js"></script>
     <script src="perlin.js"></script>
-    <style>
-        svg { pointer-events: none; }
-        text { font-size: 10px; }
-        p { margin: 1em 1em; text-indent: 1em; }
-        p + h2, div + h2 { margin-top: 2em; }
-        code { white-space: pre; }
-        g.grid rect { fill: hsl(0,10%,85%); stroke: hsl(60,10%,95%); }
-        span[data-name] {
-            display: inline-block;
-            width: 3em;
-            padding: 4px 6px;
-            text-align: center;
-            line-height: 1.5;
-            background-color: hsla(60,50%,97%,0.8);
-            box-shadow: 0 0 4px hsla(0,0%,0%,0.3); 
-            border-radius: 4px;
-            border: none;
-            transition: background-color 0.15s, box-shadow 0.15s; 
-        }
-        span[data-name]:hover { 
-            box-shadow: 0 0 4px hsla(0,50%,50%,1.0); 
-        }
-        span[data-name="size"] {
-            width: 4em;
-        }
-        g.noise path {
-            fill: none;
-            stroke: steelblue;
-            stroke-width: 3px;
-        }
-        g.zero line {
-            fill: none;
-            stroke: darkred;
-            stroke-width: 1px;
-        }
-    </style>
   </head>
   <body>
     <h1>Factorio Resource Generation</h1>
@@ -50,8 +14,10 @@
     <p>
       I occasionally see folks lamenting that they got some small ore
       patches even though they asked the game to generate large
-      ones. The Factorio wiki does try to answer this question, but I
-      think an interactive explanation would help.
+      ones. The Factorio wiki
+      does <a href="https://wiki.factorio.com/World_generator#Resource_and_terrain_generation">try
+      to answer</a> this question, but I think an interactive
+      explanation would help.
     </p>
     <p>
       For this demo I've copied a lot from Amit Patel's interactive
@@ -70,10 +36,11 @@
       </p>
       <p>
         There are many types of noise functions. This webpage uses a
-        classic function called Perlin noise; Factorio probably uses
-        something similar.
+        classic function
+        called <a href="https://en.wikipedia.org/wiki/Perlin_noise">Perlin
+        noise</a>; Factorio probably uses something similar.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         In a computer program such as Factorio, or such as this
         webpage, we can call the noise function like this:
@@ -111,7 +78,7 @@
         cannot be negative, we treat all negative numbers as zero
         ore. This effectively clips the curve at zero.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped1"></input>
         <label for="clipped1">Use this checkbox to control the clipping.</label>
@@ -137,7 +104,7 @@
         exist. At low frequencies each patch will be much wider than
         normal, but some will still be quite narrow.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped2"></input>
         <label for="clipped2">Clip to zero.</label>
@@ -165,7 +132,7 @@
         between the existing ones. The existing patches have gotten
         larger, but these new patches will be smaller.
         </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped3"></input>
         <label for="clipped3">Clip to zero.</label>
@@ -197,7 +164,7 @@
         create new patches between existing ones, as peaks that were
         beneath the threshold are now pushed above it.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped4"></input>
         <label for="clipped4">Clip to zero.</label>
@@ -217,7 +184,7 @@
         function. Try some different seed values here to see this in
         action.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped5"></input>
         <label for="clipped5">Clip to zero.</label>
@@ -249,7 +216,7 @@
       <p>
         Of course Factorio doesn't make you pick just one of these four options; you can use them all simultaneously.
       </p>
-      <svg width="550" height="220"></svg>
+      <svg viewport="0 0 660 220"></svg>
       <p>
         <input type="checkbox" data-name="clipped" id="clipped6"></input>
         <label for="clipped6">Clip to zero.</label>
