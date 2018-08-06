@@ -20,13 +20,17 @@ function octaves(weights) {
 
 class Diagram {
     constructor(containerId) {
+        this._updateFunctions = [
+            () => {
+                this.width = this.parent.property("width").baseVal.value;
+                this.height = this.parent.property("height").baseVal.value;
+                this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([this.height, 0]).clamp(true);
+                this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, this.width]);
+            }
+        ];
         this.root = d3.select(`#${containerId}`);
         this.parent = this.root.select("svg");
-        this.width = this.parent.property("width").baseVal.value;
-        this.height = this.parent.property("height").baseVal.value;
-        this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([this.height, 0]).clamp(true);
-        this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, this.width]);
-        this._updateFunctions = [];
+        setTimeout(() => this.update(), 0);
     }
 
     onUpdate(f) {
@@ -40,14 +44,16 @@ class Diagram {
 
     addGrid() {
         let g = this.parent.append('g').attr('class', "grid");
-        for (let x = 0; x < this.width/scale; x++) {
-            for (let y = 0; y < this.height/scale; y++) {
-                g.append('rect')
-                    .attr('transform', `translate(${x*scale}, ${y*scale})`)
-                    .attr('width', scale)
-                    .attr('height', scale);
+        this.onUpdate(() => {
+            for (let x = 0; x < this.width/scale; x++) {
+                for (let y = 0; y < this.height/scale; y++) {
+                    g.append('rect')
+                        .attr('transform', `translate(${x*scale}, ${y*scale})`)
+                        .attr('width', scale)
+                        .attr('height', scale);
+                }
             }
-        }
+        });
         return this;
     }
 
@@ -73,7 +79,7 @@ class Diagram {
                 return h < 0 ? 0 : h;
             }
             let noiseFunc = this.clipped ? heightClipped : height;
-            path.attr("d", d => line(this.scaleX.ticks(550).map((x) => [ x, noiseFunc(x) ])));
+            path.attr("d", d => line(this.scaleX.ticks(this.width).map((x) => [ x, noiseFunc(x) ])));
         });
         return this;
     }
