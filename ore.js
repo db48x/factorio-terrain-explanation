@@ -1,4 +1,4 @@
-// From http://www.redblobgames.com/making-of/line-drawing/
+// Derived from http://www.redblobgames.com/making-of/line-drawing/
 // Copyright 2017 Red Blob Games <redblobgames@gmail.com>
 // License: Apache v2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
 
@@ -35,7 +35,6 @@ class Diagram {
 
     onUpdate(f) {
         this._updateFunctions.push(f);
-        this.update();
     }
 
     update() {
@@ -45,6 +44,7 @@ class Diagram {
     addGrid() {
         let g = this.parent.append('g').attr('class', "grid");
         this.onUpdate(() => {
+            g.selectAll('rect').remove();
             for (let x = 0; x < this.width/scale; x++) {
                 for (let y = 0; y < this.height/scale; y++) {
                     g.append('rect')
