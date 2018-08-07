@@ -45,14 +45,30 @@ class Diagram {
         let g = this.parent.append('g').attr('class', "grid");
         this.onUpdate(() => {
             g.selectAll('rect').remove();
-            for (let x = 0; x < this.width/scale; x++) {
-                for (let y = 0; y < this.height/scale; y++) {
-                    g.append('rect')
-                        .attr('transform', `translate(${x*scale}, ${y*scale})`)
-                        .attr('width', scale)
-                        .attr('height', scale);
-                }
-            }
+            g.selectAll('line').remove();
+            let left = this.scaleX.range()[0],
+                right = this.scaleX.range()[1],
+                top = this.scaleRichness.range()[0],
+                bottom = this.scaleRichness.range()[1];
+            g.append('rect')
+             .attr('x', left)
+             .attr('y', bottom)
+             .attr('width', right - left)
+             .attr('height', top - bottom);
+            this.scaleX.ticks(this.width/scale).forEach((t) => {
+                g.append('line')
+                 .attr('x1', this.scaleX(t))
+                 .attr('y1', top)
+                 .attr('x2', this.scaleX(t))
+                 .attr('y2', bottom);
+            });
+            this.scaleRichness.ticks(this.height/scale).forEach((t) => {
+                g.append('line')
+                 .attr('x1', left)
+                 .attr('y1', this.scaleRichness(t))
+                 .attr('x2', right)
+                 .attr('y2', this.scaleRichness(t));
+            });
         });
         return this;
     }

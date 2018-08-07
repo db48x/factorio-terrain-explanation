@@ -64,6 +64,7 @@ h1 { font-size: 1.3em; }
 h2 { font-size: 1.1em; }
 code { white-space: pre-wrap; }
 g.grid rect { fill: hsl(0,10%,85%); stroke: hsl(60,10%,95%); }
+g.grid line { stroke: hsl(60,10%,95%); }
 span[data-name] {
   display: inline-block;
   width: 3em;
