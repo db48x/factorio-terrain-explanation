@@ -24,12 +24,16 @@ class Diagram {
             () => {
                 this.width = this.parent.property("width").baseVal.value;
                 this.height = this.parent.property("height").baseVal.value;
-                this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([this.height, 0]).clamp(true);
-                this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, this.width]);
+                this.scaleRichness.range([this.height, 0]);
+                this.scaleRichnessClipped.range([this.height/2, 0]);
+                this.scaleX.range([0, this.width]);
             }
         ];
         this.root = d3.select(`#${containerId}`);
         this.parent = this.root.select("svg");
+        this.scaleRichness = d3.scaleLinear().domain([-1, 1]).range([this.height, 0]).clamp(true);
+        this.scaleRichnessClipped = d3.scaleLinear().domain([0, 1]).range([this.height, this.height/2]).clamp(true);
+        this.scaleX = d3.scaleLinear().domain([-3, 3]).range([0, this.width]);
         setTimeout(() => this.update(), 0);
     }
 
@@ -73,13 +77,7 @@ class Diagram {
         return this;
     }
 
-    addNoise() {
-        let g = this.parent.append('g').attr('class', "noise");
-        let line = d3.line()
-                     .x((d) => this.scaleX(d[0]))
-                     .y((d) => this.scaleRichness(d[1]));
-        let self = this;
-        let path = g.append("svg:path");
+    addNoise(g, richness) {
         this.onUpdate(() => {
             let seed = "seed" in this ? this.seed : 0,
                 richness = "richness" in this ? this.richness : 1,
@@ -90,12 +88,35 @@ class Diagram {
             function height(x) {
                 return richness * noise(x * frequency) + size;
             }
-            function heightClipped(x) {
-                let h = height(x);
-                return h < 0 ? 0 : h;
+            this.values = this.scaleX.ticks(this.width).map((x) => [ x, height(x) ]);
+        });
+        return this;
+    }
+
+    drawNoise() {
+        let g = this.parent.append('g').attr('class', "noise");
+        let line = d3.line()
+                     .x((d) => this.scaleX(d[0]))
+                     .y((d) => this.scaleRichness(d[1]));
+        let path = g.append("svg:path");
+        this.onUpdate(() => {
+            if (this.values) {
+                path.attr("d", d => line(this.values));
             }
-            let noiseFunc = this.clipped ? heightClipped : height;
-            path.attr("d", d => line(this.scaleX.ticks(this.width).map((x) => [ x, noiseFunc(x) ])));
+        });
+        return this;
+    }
+
+    drawClippedNoise() {
+        let g = this.parent.append('g').attr('class', "clippednoise");
+        let line = d3.line()
+                     .x((d) => this.scaleX(d[0]))
+                     .y((d) => this.scaleRichnessClipped(d[1]));
+        let path = g.append("svg:path");
+        this.onUpdate(() => {
+            if (this.values) {
+                path.attr("d", d => line(this.values));
+            }
         });
         return this;
     }
@@ -104,17 +125,11 @@ class Diagram {
         let g = this.parent.append('g').attr('class', "zero");
         let line = g.append('line');
         this.onUpdate(() => {
-            line.attr('x1', this.scaleX(this.scaleX.domain()[0]))
+            line.attr('x1', this.scaleX.range()[0])
                 .attr('y1', this.scaleRichness(0))
-                .attr('x2', this.scaleX(this.scaleX.domain()[1]))
+                .attr('x2', this.scaleX.range()[1])
                 .attr('y2', this.scaleRichness(0));
         });
-        return this;
-    }
-
-    addThreshold() {
-        this.clipped = true;
-        this.makeCheckbox('clipped', true);
         return this;
     }
 
@@ -183,47 +198,54 @@ class Diagram {
 
 let diagram1 = new Diagram('noise')
     .addGrid()
-    .addNoise();
+    .addNoise()
+    .drawNoise();
 
 let diagram2 = new Diagram('threshold')
     .addGrid()
     .addNoise()
-    .addZeroLine()
-    .addThreshold();
+    .drawNoise()
+    .drawClippedNoise()
+    .addZeroLine();
 
 let diagram3 = new Diagram('size')
     .addGrid()
     .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
     .addZeroLine()
-    .addThreshold()
     .addSize();
 
 let diagram4 = new Diagram('richness')
     .addGrid()
     .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
     .addZeroLine()
-    .addThreshold()
     .addRichness();
 
 let diagram5 = new Diagram('frequency')
     .addGrid()
     .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
     .addZeroLine()
-    .addThreshold()
     .addFrequency();
 
 let diagram6 = new Diagram('seed')
     .addGrid()
     .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
     .addZeroLine()
-    .addThreshold()
     .addSeed();
 
 let diagram7 = new Diagram('everything')
     .addGrid()
     .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
     .addZeroLine()
-    .addThreshold()
     .addSize()
     .addRichness()
     .addFrequency()

@@ -83,10 +83,18 @@ span[data-name]:hover {
 span[data-name="size"] {
   width: 4em;
 }
-g.noise path {
+g.clippednoise path, #noise g.noise path {
   fill: none;
   stroke: steelblue;
   stroke-width: 3px;
+}
+/* g.clippednoise { */
+/*   clip-path: view-box inset(0% 0% 50% 0%); */
+/* } */
+g.noise path {
+  fill: none;
+  stroke: slategray;
+  stroke-width: 1px;
 }
 g.zero line {
   fill: none;

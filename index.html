@@ -80,12 +80,9 @@
       </p>
       <svg viewport="0 0 660 220"></svg>
       <p>
-        <input type="checkbox" data-name="clipped" id="clipped1"></input>
-        <label for="clipped1">Use this checkbox to control the clipping.</label>
-      </p>
-      <p>
-        This is not an option Factorio gives you, but you can use it
-        here to better see what is going on.
+        This is not something that Factorio will show you, but for
+        demonstration purposes we'll keep showing the negative values
+        so that you can see how they are modified by the later steps.
       </p>
     </div>
 
@@ -105,10 +102,6 @@
         normal, but some will still be quite narrow.
       </p>
       <svg viewport="0 0 660 220"></svg>
-      <p>
-        <input type="checkbox" data-name="clipped" id="clipped2"></input>
-        <label for="clipped2">Clip to zero.</label>
-      </p>
       <blockquote><code>function height(x) {
   noise(x * <span data-name="frequency"></span>);
 }</code></blockquote>
@@ -133,10 +126,6 @@
         larger, but these new patches will be smaller.
         </p>
       <svg viewport="0 0 660 220"></svg>
-      <p>
-        <input type="checkbox" data-name="clipped" id="clipped3"></input>
-        <label for="clipped3">Clip to zero.</label>
-      </p>
       <blockquote><code>function height(x) {
   noise(x) + <span data-name="size"></span>;
 }</code></blockquote>
@@ -165,10 +154,6 @@
         beneath the threshold are now pushed above it.
       </p>
       <svg viewport="0 0 660 220"></svg>
-      <p>
-        <input type="checkbox" data-name="clipped" id="clipped4"></input>
-        <label for="clipped4">Clip to zero.</label>
-      </p>
       <blockquote><code>function height(x) {
   <span data-name="richness"></span> * noise(x);
 }</code></blockquote>
@@ -185,10 +170,6 @@
         action.
       </p>
       <svg viewport="0 0 660 220"></svg>
-      <p>
-        <input type="checkbox" data-name="clipped" id="clipped5"></input>
-        <label for="clipped5">Clip to zero.</label>
-      </p>
       <blockquote><code>set_seed(<span data-name="seed"></span>);</code></blockquote>
       <p>
         Factorio can use any of billions of different seed values, but
@@ -214,13 +195,10 @@
     </p>
     <div id="everything">
       <p>
-        Of course Factorio doesn't make you pick just one of these four options; you can use them all simultaneously.
+        Of course Factorio doesn't make you pick just one of these
+        four options; you can use them all simultaneously.
       </p>
       <svg viewport="0 0 660 220"></svg>
-      <p>
-        <input type="checkbox" data-name="clipped" id="clipped6"></input>
-        <label for="clipped6">Clip to zero.</label>
-      </p>
       <blockquote><code>set_seed(<span data-name="seed"></span>);</code></blockquote>
       <blockquote><code>function height(x) {
   <span data-name="richness"></span> * noise(x * <span data-name="frequency"></span>) + <span data-name="size"></span>;
