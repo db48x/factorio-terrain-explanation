@@ -93,11 +93,11 @@ class Diagram {
         return this;
     }
 
-    drawNoise() {
-        let g = this.parent.append('g').attr('class', "noise");
+    _drawNoise(className, yscale) {
+        let g = this.parent.append('g').attr('class', className);
         let line = d3.line()
                      .x((d) => this.scaleX(d[0]))
-                     .y((d) => this.scaleRichness(d[1]));
+                     .y(yscale);
         let path = g.append("svg:path");
         this.onUpdate(() => {
             if (this.values) {
@@ -107,18 +107,11 @@ class Diagram {
         return this;
     }
 
+    drawNoise() {
+        return this._drawNoise("noise", (d) => this.scaleRichness(d[1]));
+    }
     drawClippedNoise() {
-        let g = this.parent.append('g').attr('class', "clippednoise");
-        let line = d3.line()
-                     .x((d) => this.scaleX(d[0]))
-                     .y((d) => this.scaleRichnessClipped(d[1]));
-        let path = g.append("svg:path");
-        this.onUpdate(() => {
-            if (this.values) {
-                path.attr("d", d => line(this.values));
-            }
-        });
-        return this;
+        return this._drawNoise("clippednoise", (d) => this.scaleRichnessClipped(d[1]));
     }
 
     addZeroLine() {
