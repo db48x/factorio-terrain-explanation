@@ -20,6 +20,12 @@
       explanation would help.
     </p>
     <p>
+      Now that the folks at Wube are talking about how they're going
+      to change the map generator in version 0.17, much of this demo
+      is going to become obsolete. To prevent that I'll mention the
+      improvements they'll be using below.
+    </p>
+    <p>
       For this demo I've copied a lot from Amit Patel's interactive
       demos on <a href="https://www.redblobgames.com/">Red Blob
       Games</a>.
@@ -86,6 +92,24 @@
       </p>
     </div>
 
+    <h2>Pause and consider</h2>
+    <div id="pause">
+      <p>
+        Let's look specifically at some of the ore patches that we've
+        generated.
+      </p>
+      <svg viewport="0 0 660 220"></svg>
+      <p class="half left small-patch">
+        This ore patch is fairly small, and has a single central peak
+        where the density of ore is highest. This is the most common
+        form that ore patches take.
+      </p>
+      <p class="half right large-patch">
+        This one, on the other hand, is very wide, and has several
+        peaks instead of just one.
+      </p>
+    </div>
+
     <h2>Stretch it</h2>
     <div id="frequency">
       <p>
@@ -126,9 +150,12 @@
         larger, but these new patches will be smaller.
         </p>
       <svg viewport="0 0 660 220"></svg>
-      <blockquote><code>function height(x) {
+      <blockquote><code class="half">function height(x) {
   noise(x) + <span data-name="size"></span>;
 }</code></blockquote>
+      <p class="new-patch half right">
+        A wild patch appears!
+      </p>
       <p>
         As you can see from the implementation, all we're doing is
         adding a constant value at every point along the graph. This
@@ -154,9 +181,12 @@
         beneath the threshold are now pushed above it.
       </p>
       <svg viewport="0 0 660 220"></svg>
-      <blockquote><code>function height(x) {
+      <blockquote><code class="half">function height(x) {
   <span data-name="richness"></span> * noise(x);
 }</code></blockquote>
+      <p class="new-patch half right">
+        A wild patch appears!
+      </p>
     </div>
 
     <h2>Seed it</h2>

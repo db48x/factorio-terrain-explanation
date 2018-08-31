@@ -126,20 +126,20 @@ class Diagram {
         return this;
     }
 
-    addSize() {
-        this.size = -.3;
+    addSize(defaultValue) {
+        this.size = defaultValue || -.3;
         this.makeScrubbableNumber('size', -1, 1, 2);
         return this;
     }
 
-    addRichness() {
-        this.richness = 1;
+    addRichness(defaultValue) {
+        this.richness = defaultValue || 1;
         this.makeScrubbableNumber('richness', 0, 10, 1);
         return this;
     }
 
-    addFrequency() {
-        this.frequency = 1;
+    addFrequency(defaultValue) {
+        this.frequency = defaultValue || 1;
         this.makeScrubbableNumber('frequency', 0.1, 10, 1);
         return this;
     }
@@ -187,6 +187,90 @@ class Diagram {
                         diagram.update();
                     });
     }
+
+    makeDebugPoint(name, location, color) {
+        let diagram = this;
+        let element = diagram.root.select(`.${name}`);
+        let g = this.parent.append('g').attr('class', `debugPoint debug ${name}`);
+        let point = g.append('circle').attr('class', 'debug');
+        point.attr('cx', location.x);
+        point.attr('cy', location.y);
+        point.attr('r', 3);
+        point.attr('fill', color || "red");
+        this.onUpdate(() => {
+            point.attr('cx', location.x);
+            point.attr('cy', location.y);
+            point.attr('r', 3);
+        });
+        return this;
+    }
+
+    makeCurve(name, element, a, ac, bc, b) {
+        let diagram = this;
+        diagram.makeDebugPoint(name, a, "red");
+        diagram.makeDebugPoint(name, ac, "orange");
+        diagram.makeDebugPoint(name, b, "green");
+        diagram.makeDebugPoint(name, bc, "blue");
+        return `M ${a.x} ${a.y} C ${ac.x} ${ac.y} ${bc.x} ${bc.y} ${b.x} ${b.y}`;
+    }
+
+    makePointer(name, location, side) {
+        let diagram = this;
+        let element = diagram.root.select(`.${name}`);
+        let g = this.parent.append('g').attr('class', `pointer ${name}`);
+        let path = g.append('path');
+        this.onUpdate(() => {
+            diagram.root.selectAll('.debug').remove();
+            let tipPosition = { x: this.scaleX(location.x)
+                              , y: this.scaleRichness(location.y)
+                              };
+            let diagramRect = diagram.root.select('svg').node().getBoundingClientRect();
+            let diagramPosition = { x: diagramRect.left + window.pageXOffset
+                                  , y: diagramRect.top + window.pageYOffset
+                                  };
+            let elemRect = element.node().getBoundingClientRect();
+            let elementOffsetTL = { x: elemRect.left + window.pageXOffset - diagramPosition.x
+                                  , y: elemRect.top + window.pageYOffset - diagramPosition.y
+                                  };
+            let elementOffsetTR = { x: elemRect.right + window.pageXOffset - diagramPosition.x
+                                  , y: elemRect.top + window.pageYOffset - diagramPosition.y
+                                  };
+            if (side === 'left') {
+                path.attr('d',
+                          [ this.makeCurve(name, g,
+                                           tipPosition,
+                                           {x: tipPosition.x - 50, y: tipPosition.y + 30},
+                                           {x: elementOffsetTR.x, y: elementOffsetTR.y - 60},
+                                           elementOffsetTR)
+                          , `L ${elementOffsetTR.x} ${elementOffsetTR.y + elemRect.height}`
+                          , `L ${elementOffsetTL.x} ${elementOffsetTR.y + elemRect.height}`
+                          , `L ${elementOffsetTL.x} ${elementOffsetTL.y}`
+                          , this.makeCurve(name, g,
+                                           elementOffsetTL,
+                                           {x: elementOffsetTL.x, y: elementOffsetTL.y - 60},
+                                           {x: tipPosition.x - 50, y: tipPosition.y + 10},
+                                           tipPosition)
+                          ].join(" "));
+            } else {
+                path.attr('d',
+                          [ this.makeCurve(name, g,
+                                           tipPosition,
+                                           {x: tipPosition.x + 50, y: tipPosition.y + 1},
+                                           {x: elementOffsetTR.x, y: elementOffsetTR.y - 60},
+                                           elementOffsetTR)
+                          , `L ${elementOffsetTR.x} ${elementOffsetTR.y + elemRect.height}`
+                          , `L ${elementOffsetTL.x} ${elementOffsetTR.y + elemRect.height}`
+                          , `L ${elementOffsetTL.x} ${elementOffsetTL.y}`
+                          , this.makeCurve(name, g,
+                                           elementOffsetTL,
+                                           {x: elementOffsetTL.x, y: elementOffsetTL.y - 60},
+                                           {x: tipPosition.x + 50, y: tipPosition.y + 10},
+                                           tipPosition)
+                          ].join(" "));
+            }
+        });
+        return this;
+    }
 }
 
 let diagram1 = new Diagram('noise')
@@ -201,31 +285,42 @@ let diagram2 = new Diagram('threshold')
     .drawClippedNoise()
     .addZeroLine();
 
-let diagram3 = new Diagram('size')
+let diagram3 = new Diagram('pause')
     .addGrid()
     .addNoise()
     .drawNoise()
     .drawClippedNoise()
     .addZeroLine()
-    .addSize();
+    .makePointer("small-patch", {x: -1.9, y: .03}, 'left')
+    .makePointer("large-patch", {x: -.05, y: .07}, 'right');
 
-let diagram4 = new Diagram('richness')
+let diagram4 = new Diagram('size')
     .addGrid()
     .addNoise()
     .drawNoise()
     .drawClippedNoise()
     .addZeroLine()
-    .addRichness();
+    .addSize(-0.20)
+    .makePointer("new-patch", {x: 1.575, y: .03}, 'right');
 
-let diagram5 = new Diagram('frequency')
+let diagram5 = new Diagram('richness')
     .addGrid()
     .addNoise()
     .drawNoise()
     .drawClippedNoise()
     .addZeroLine()
-    .addFrequency();
+    .addRichness(2)
+    .makePointer("new-patch", {x: 1.575, y: .1}, 'right');
 
-let diagram6 = new Diagram('seed')
+let diagram6 = new Diagram('frequency')
+    .addGrid()
+    .addNoise()
+    .drawNoise()
+    .drawClippedNoise()
+    .addZeroLine()
+    .addFrequency(0.7);
+
+let diagram7 = new Diagram('seed')
     .addGrid()
     .addNoise()
     .drawNoise()
@@ -233,7 +328,7 @@ let diagram6 = new Diagram('seed')
     .addZeroLine()
     .addSeed();
 
-let diagram7 = new Diagram('everything')
+let diagram8 = new Diagram('everything')
     .addGrid()
     .addNoise()
     .drawNoise()

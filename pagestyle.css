@@ -36,6 +36,7 @@ body > div, body > p, h1, h2, svg {
 header, footer {
   background-color: hsl(60,20%,80%);
   padding: 0.5em;
+  clear: both;
 }
 footer {
   min-height: 3em;
@@ -58,11 +59,15 @@ span[data-name] {
 }
 
 svg { pointer-events: none; }
-p { text-indent: 1em; }
+p { text-indent: 1em; clear: both; }
+p.half { font-size: smaller; width: 45%; padding: .25em }
+p.right { clear: none; float: right; }
+p.left { clear: none; float: left; }
 p + h2, div + h2 { margin-top: 2em; }
-h1 { font-size: 1.3em; }
-h2 { font-size: 1.1em; }
-code { white-space: pre-wrap; }
+h1 { font-size: 1.3em; clear: both; }
+h2 { font-size: 1.1em; clear: both; }
+code { white-space: pre-wrap; width: 45%; }
+code.half { white-space: pre-wrap; clear: left; float: left; width: 45%; padding-bottom: 1em; }
 g.grid rect { fill: hsl(0,10%,85%); stroke: hsl(60,10%,95%); }
 g.grid line { stroke: hsl(60,10%,95%); }
 span[data-name] {
@@ -83,6 +88,8 @@ span[data-name]:hover {
 span[data-name="size"] {
   width: 4em;
 }
+svg { position: relative; z-index: -1; }
+svg .debug { display: none; }
 g.clippednoise path, #noise g.noise path {
   fill: none;
   stroke: steelblue;
@@ -101,3 +108,4 @@ g.zero line {
   stroke: darkred;
   stroke-width: 1px;
 }
+g.pointer path { fill: tan; stroke: DimGray; stroke-width: 2px; }
