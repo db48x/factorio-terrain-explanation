@@ -60,7 +60,7 @@ span[data-name] {
 
 svg { pointer-events: none; }
 p { text-indent: 1em; clear: both; }
-p.half { font-size: smaller; width: 45%; padding: .25em }
+p.half { font-size: smaller; width: 40%; padding: .25em }
 p.right { clear: none; float: right; }
 p.left { clear: none; float: left; }
 p + h2, div + h2 { margin-top: 2em; }

@@ -239,7 +239,7 @@ class Diagram {
                 path.attr('d',
                           [ this.makeCurve(name, g,
                                            tipPosition,
-                                           {x: tipPosition.x - 50, y: tipPosition.y + 30},
+                                           {x: tipPosition.x - 75, y: tipPosition.y + 60},
                                            {x: elementOffsetTR.x, y: elementOffsetTR.y - 60},
                                            elementOffsetTR)
                           , `L ${elementOffsetTR.x} ${elementOffsetTR.y + elemRect.height}`
@@ -263,8 +263,8 @@ class Diagram {
                           , `L ${elementOffsetTL.x} ${elementOffsetTL.y}`
                           , this.makeCurve(name, g,
                                            elementOffsetTL,
-                                           {x: elementOffsetTL.x, y: elementOffsetTL.y - 60},
-                                           {x: tipPosition.x + 50, y: tipPosition.y + 10},
+                                           {x: elementOffsetTL.x, y: elementOffsetTL.y - 80},
+                                           {x: tipPosition.x + 75, y: tipPosition.y + 30},
                                            tipPosition)
                           ].join(" "));
             }
