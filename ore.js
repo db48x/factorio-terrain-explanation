@@ -150,6 +150,45 @@ class Diagram {
         return this;
     }
 
+    addPausePointers() {
+        let diagram = this;
+        this.makePointer("small-patch", () => { return {x: -1.9, y: .03}; }, 'left');
+        this.makePointer("large-patch", () => { return {x: -.05, y: .07}; }, 'right');
+        return this;
+    }
+
+    addRichnessPointer() {
+        this.makePointer("new-patch",
+                         () => {
+                             let domain = this.scaleRichness.domain();
+                             let verticalSlide = d3.scaleLinear()
+                                                   .domain([1, 4.5])
+                                                   .range([0, domain[1]])
+                                                   .clamp(true);
+                             return { x: 1.575
+                                    , y: verticalSlide(this.richness)
+                                    };
+                         },
+                         'right');
+        return this;
+    }
+
+    addSizePointer() {
+        this.makePointer("new-patch",
+                         () => {
+                             let domain = this.scaleRichness.domain();
+                             let verticalSlide = d3.scaleLinear()
+                                                   .domain([-0.29, .70])
+                                                   .range([0, domain[1]])
+                                                   .clamp(true);
+                             return { x: 1.575
+                                    , y: verticalSlide(this.size)
+                                    };
+                         },
+                         'right');
+        return this;
+    }
+
     makeScrubbableNumber(name, low, high, precision) {
         let diagram = this;
         let elements = diagram.root.selectAll(`[data-name='${name}']`);
@@ -214,12 +253,13 @@ class Diagram {
         return `M ${a.x} ${a.y} C ${ac.x} ${ac.y} ${bc.x} ${bc.y} ${b.x} ${b.y}`;
     }
 
-    makePointer(name, location, side) {
+    makePointer(name, func, side) {
         let diagram = this;
         let element = diagram.root.select(`.${name}`);
         let g = this.parent.append('g').attr('class', `pointer ${name}`);
         let path = g.append('path');
         this.onUpdate(() => {
+            let location = func();
             diagram.root.selectAll('.debug').remove();
             let tipPosition = { x: this.scaleX(location.x)
                               , y: this.scaleRichness(location.y)
@@ -291,8 +331,7 @@ let diagram3 = new Diagram('pause')
     .drawNoise()
     .drawClippedNoise()
     .addZeroLine()
-    .makePointer("small-patch", {x: -1.9, y: .03}, 'left')
-    .makePointer("large-patch", {x: -.05, y: .07}, 'right');
+    .addPausePointers();
 
 let diagram4 = new Diagram('size')
     .addGrid()
@@ -301,7 +340,7 @@ let diagram4 = new Diagram('size')
     .drawClippedNoise()
     .addZeroLine()
     .addSize(-0.20)
-    .makePointer("new-patch", {x: 1.575, y: .03}, 'right');
+    .addSizePointer();
 
 let diagram5 = new Diagram('richness')
     .addGrid()
@@ -310,7 +349,7 @@ let diagram5 = new Diagram('richness')
     .drawClippedNoise()
     .addZeroLine()
     .addRichness(2)
-    .makePointer("new-patch", {x: 1.575, y: .1}, 'right');
+    .addRichnessPointer();
 
 let diagram6 = new Diagram('frequency')
     .addGrid()
